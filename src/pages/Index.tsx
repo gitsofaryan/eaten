@@ -164,7 +164,7 @@ const Index = () => {
         <div className="relative container mx-auto px-4 py-12 md:py-20">
           <div className="max-w-2xl mx-auto text-center animate-fade-in-up">
             <h1 className="text-4xl md:text-6xl font-extrabold mb-4 text-foreground">
-              Hill Calories AI 🍽️
+              NU 🍽️
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground mb-2">
               Snap a photo, know your nutrition instantly!
