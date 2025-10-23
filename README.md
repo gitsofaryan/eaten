@@ -1,73 +1,234 @@
-# Welcome to your Lovable project
+# 🍽️ eaten
 
-## Project info
+**Instant Meal Nutrition Analysis with AI**
 
-**URL**: https://lovable.dev/projects/127814de-c46d-4866-b069-7dafab1fd746
+Snap a photo of your meal and get instant nutritional analysis. Track calories, protein, carbs, and fat with AI-powered food recognition.
 
-## How can I edit this code?
+---
 
-There are several ways of editing your application.
+## ✨ Features
 
-**Use Lovable**
+- 📸 **Photo Upload**: Take a photo or upload an image of your meal
+- 🤖 **AI Analysis**: Automatic food recognition and nutritional breakdown (ready for API integration)
+- 📊 **Detailed Macros**: View calories, protein, carbs, and fat for each food item
+- 📈 **Total Summary**: See aggregate nutritional information for your entire meal
+- 🎨 **Beautiful UI**: Modern, responsive design with glass morphism effects
+- ⚡ **Fast & Responsive**: Built with React and Vite for optimal performance
+- 📱 **Mobile-Friendly**: Works seamlessly on desktop and mobile devices
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/127814de-c46d-4866-b069-7dafab1fd746) and start prompting.
+---
 
-Changes made via Lovable will be committed automatically to this repo.
+## 🚀 Demo
 
-**Use your preferred IDE**
+The app provides a seamless three-step process:
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+1. **Upload**: Take a photo or upload an image of your meal
+2. **Analyze**: AI processes the image to identify food items
+3. **Review**: View detailed nutritional breakdown for each item and total macros
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+---
 
-Follow these steps:
+## 🛠️ Technology Stack
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+This project is built with modern web technologies:
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+- **Frontend Framework**: [React 18](https://react.dev/) with TypeScript
+- **Build Tool**: [Vite](https://vitejs.dev/) for lightning-fast development
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/) with custom design system
+- **UI Components**: [shadcn/ui](https://ui.shadcn.com/) and [Radix UI](https://www.radix-ui.com/)
+- **Routing**: [React Router v6](https://reactrouter.com/)
+- **State Management**: React Query for server state
+- **Icons**: [Lucide React](https://lucide.dev/)
+- **Forms**: React Hook Form with Zod validation
+- **Animations**: Tailwind CSS Animate
 
-# Step 3: Install the necessary dependencies.
-npm i
+---
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+## 📦 Getting Started
+
+### Prerequisites
+
+- Node.js 16+ and npm (or bun/pnpm)
+- Git
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/gitsofaryan/eaten.git
+   cd eaten
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Start the development server**
+   ```bash
+   npm run dev
+   ```
+
+4. **Open your browser**
+   
+   Navigate to `http://localhost:5173` (or the port shown in your terminal)
+
+---
+
+## 💻 Usage
+
+### Basic Workflow
+
+1. **Upload a Photo**
+   - Click "Take Photo" to use your device camera
+   - Or click "Upload Photo" to select an image from your device
+
+2. **Analyze**
+   - Review the uploaded image
+   - Click "Analyze" to process the meal
+
+3. **View Results**
+   - See individual food items with their nutritional values
+   - Check the total macros summary at the top
+   - Click "New" to analyze another meal
+
+### Current Status
+
+The app currently uses mock data for demonstration. To integrate with a real AI nutrition API:
+
+1. Update the `apiEndpoint` variable in `src/pages/Index.tsx`
+2. Uncomment the API integration code (lines 99-121)
+3. Configure your API credentials
+
+---
+
+## 📁 Project Structure
+
+```
+eaten/
+├── public/              # Static assets
+├── src/
+│   ├── assets/          # Images and media files
+│   ├── components/      # React components
+│   │   ├── ui/          # shadcn/ui components
+│   │   ├── FoodItemCard.tsx    # Individual food item display
+│   │   └── TotalMacros.tsx     # Macro totals summary
+│   ├── hooks/           # Custom React hooks
+│   ├── lib/             # Utility functions
+│   ├── pages/           # Page components
+│   │   ├── Index.tsx    # Main app page
+│   │   └── NotFound.tsx # 404 page
+│   ├── App.tsx          # App root component
+│   └── main.tsx         # Entry point
+├── index.html           # HTML template
+├── package.json         # Dependencies and scripts
+├── tailwind.config.ts   # Tailwind configuration
+├── tsconfig.json        # TypeScript configuration
+└── vite.config.ts       # Vite configuration
 ```
 
-**Edit a file directly in GitHub**
+---
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## 🔧 Development
 
-**Use GitHub Codespaces**
+### Available Scripts
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run build:dev` - Build in development mode
+- `npm run lint` - Run ESLint
+- `npm run preview` - Preview production build locally
 
-## What technologies are used for this project?
+### Code Style
 
-This project is built with:
+The project uses:
+- ESLint for code linting
+- TypeScript for type safety
+- Prettier-compatible formatting
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+### Adding New Components
 
-## How can I deploy this project?
+shadcn/ui components can be added using:
+```bash
+npx shadcn-ui@latest add [component-name]
+```
 
-Simply open [Lovable](https://lovable.dev/projects/127814de-c46d-4866-b069-7dafab1fd746) and click on Share -> Publish.
+---
 
-## Can I connect a custom domain to my Lovable project?
+## 🎨 Customization
 
-Yes, you can!
+### Styling
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+The app uses a custom design system with:
+- Glass morphism effects (`glass-card` classes)
+- Custom color palette (defined in `src/index.css`)
+- Responsive typography
+- Custom animations
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+### Theme Colors
+
+Colors can be customized in `src/index.css` by modifying CSS variables:
+- `--primary`: Main brand color
+- `--accent`: Accent highlights
+- `--background`: Background color
+- And more...
+
+---
+
+## 🔮 Future Enhancements
+
+- [ ] Integrate with real AI nutrition API
+- [ ] Add user authentication and meal history
+- [ ] Implement meal tracking over time
+- [ ] Add daily/weekly nutrition goals
+- [ ] Export nutrition data as PDF/CSV
+- [ ] Support multiple languages
+- [ ] Add barcode scanning for packaged foods
+- [ ] Implement recipe suggestions based on nutrition goals
+- [ ] Add social sharing features
+- [ ] Create mobile apps (iOS/Android)
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Here's how you can help:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+### Development Guidelines
+
+- Write clean, readable code
+- Follow the existing code style
+- Add comments for complex logic
+- Test your changes thoroughly
+- Update documentation as needed
+
+---
+
+## 📝 License
+
+This project is open source and available under the [MIT License](LICENSE).
+
+---
+
+## 🙏 Acknowledgments
+
+- Built with [Lovable](https://lovable.dev)
+- UI components from [shadcn/ui](https://ui.shadcn.com/)
+- Icons from [Lucide](https://lucide.dev/)
+- Fonts: Great Vibes & Satisfy from Google Fonts
+
+---
+
+## 📧 Contact
+
+For questions or feedback, please open an issue on GitHub.
+
+---
+
+Made with ❤️ for healthier eating habits
