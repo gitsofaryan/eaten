@@ -54,7 +54,7 @@ const Index = () => {
 
     try {
       // TODO: Replace with actual API endpoint
-      const apiEndpoint = "will update";
+      const apiEndpoint = "https://aryanjain.app.n8n.cloud/webhook-test/eatn";
       
       // Simulate API call for now
       await new Promise(resolve => setTimeout(resolve, 2000));
@@ -96,7 +96,7 @@ const Index = () => {
       });
 
       // Uncomment when API is ready:
-      /*
+      
       const response = await fetch(apiEndpoint, {
         method: 'POST',
         headers: {
@@ -118,7 +118,7 @@ const Index = () => {
         title: "Analysis complete",
         description: `Found ${data.items.length} items`,
       });
-      */
+      
 
     } catch (error) {
       console.error("Analysis error:", error);
