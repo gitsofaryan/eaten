@@ -30,11 +30,11 @@ const Index = () => {
     const file = event.target.files?.[0];
     if (file) {
       if (file.size > 10 * 1024 * 1024) {
-        toast({
-          title: "File too large",
-          description: "Please choose a photo under 10MB",
-          variant: "destructive",
-        });
+      toast({
+        title: "File too large",
+        description: "Please choose a photo under 10MB",
+        variant: "destructive",
+      });
         return;
       }
 
@@ -48,20 +48,63 @@ const Index = () => {
   };
 
   const handleAnalyze = async () => {
-    if (!fileInputRef.current?.files?.[0]) return;
+    if (!selectedImage) return;
 
     setIsAnalyzing(true);
 
     try {
+      // TODO: Replace with actual API endpoint
       const apiEndpoint = "https://aryanjain.app.n8n.cloud/webhook-test/eatn";
-      const file = fileInputRef.current.files[0];
+      
+      // Simulate API call for now
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Mock response - replace with actual API call
+      const mockResponse: AnalysisResult = {
+        items: [
+          {
+            name: "Grilled Chicken Breast",
+            quantity: "150g",
+            calories: 165,
+            protein: 31,
+            carbs: 0,
+            fat: 3.6,
+          },
+          {
+            name: "Brown Rice",
+            quantity: "1 cup",
+            calories: 218,
+            protein: 5,
+            carbs: 46,
+            fat: 2,
+          },
+          {
+            name: "Mixed Vegetables",
+            quantity: "200g",
+            calories: 80,
+            protein: 3,
+            carbs: 16,
+            fat: 0.5,
+          },
+        ],
+      };
 
-      const formData = new FormData();
-      formData.append('image', file, 'meal.png');
+      setResults(mockResponse.items);
+      toast({
+        title: "Analysis complete",
+        description: `Found ${mockResponse.items.length} items`,
+      });
 
+      // Uncomment when API is ready:
+      
       const response = await fetch(apiEndpoint, {
         method: 'POST',
-        body: formData, // No need to set Content-Type; fetch handles multipart/form-data automatically
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          image: selectedImage,
+        }),
       });
 
       if (!response.ok) {
@@ -70,11 +113,12 @@ const Index = () => {
 
       const data: AnalysisResult = await response.json();
       setResults(data.items);
-
+      
       toast({
         title: "Analysis complete",
         description: `Found ${data.items.length} items`,
       });
+      
 
     } catch (error) {
       console.error("Analysis error:", error);
@@ -102,7 +146,7 @@ const Index = () => {
         protein: results.reduce((sum, item) => sum + item.protein, 0),
         carbs: results.reduce((sum, item) => sum + item.carbs, 0),
         fat: results.reduce((sum, item) => sum + item.fat, 0),
-    }
+      }
     : null;
 
   return (
