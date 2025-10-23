@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
-import { Camera, Upload, Loader2, X } from "lucide-react";
+import { Camera, Upload, Loader2, X, Instagram, Dumbbell } from "lucide-react";
 import { FoodItemCard } from "@/components/FoodItemCard";
 import { TotalMacros } from "@/components/TotalMacros";
 import { useToast } from "@/hooks/use-toast";
@@ -325,6 +325,27 @@ const Index = () => {
               </div>
             </div>
           )}
+        </div>
+
+        {/* Credit Label */}
+        <div className="fixed bottom-4 right-4 z-50">
+          <div className="glass-card rounded-2xl px-4 py-3 shadow-large hover:scale-105 transition-transform duration-200">
+            <a
+              href="https://instagram.com/arien_jain"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 text-white/90 hover:text-white transition-colors"
+            >
+              <Dumbbell className="w-4 h-4 text-primary" />
+              <div className="flex flex-col">
+                <span className="text-xs font-medium">Built by Arien</span>
+                <span className="text-[10px] text-white/60 flex items-center gap-1">
+                  <Instagram className="w-3 h-3" />
+                  @arien_jain • For gym brats 💪
+                </span>
+              </div>
+            </a>
+          </div>
         </div>
       </div>
     </div>

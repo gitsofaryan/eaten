@@ -1,49 +1,70 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    
+
     <!-- Mobile-first viewport configuration -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover" />
-    
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover"
+    />
+
     <!-- PWA Meta Tags -->
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
     <meta name="apple-mobile-web-app-title" content="Eaten" />
-    
+
     <!-- Theme colors for mobile browsers -->
     <meta name="theme-color" content="#22c55e" />
     <meta name="msapplication-TileColor" content="#22c55e" />
-    
+
     <title>eaten - Instant Meal Nutrition Analysis</title>
-    <meta name="description" content="Snap a photo of your meal and get instant nutritional analysis. Track calories, protein, carbs, and fat with AI-powered food recognition." />
+    <meta
+      name="description"
+      content="Snap a photo of your meal and get instant nutritional analysis. Track calories, protein, carbs, and fat with AI-powered food recognition."
+    />
     <meta name="author" content="eaten" />
-    
+
     <!-- PWA Manifest -->
     <link rel="manifest" href="/manifest.json" />
-    
+
     <!-- Icons for different platforms -->
     <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
     <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png" />
     <link rel="apple-touch-icon" href="/icon-192.png" />
-    
+
     <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Satisfy&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Satisfy&display=swap"
+      rel="stylesheet"
+    />
 
     <!-- Social Media Meta Tags -->
-    <meta property="og:title" content="eaten - Instant Meal Nutrition Analysis" />
-    <meta property="og:description" content="Snap a photo of your meal and get instant nutritional analysis. Track calories, protein, carbs, and fat with AI-powered food recognition." />
+    <meta
+      property="og:title"
+      content="eaten - Instant Meal Nutrition Analysis"
+    />
+    <meta
+      property="og:description"
+      content="Snap a photo of your meal and get instant nutritional analysis. Track calories, protein, carbs, and fat with AI-powered food recognition."
+    />
     <meta property="og:type" content="website" />
     <meta property="og:image" content="/icon-512.png" />
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="eaten - Food Nutrition Analyzer" />
-    <meta name="twitter:description" content="AI-powered instant meal nutrition analysis" />
+    <meta
+      name="twitter:description"
+      content="AI-powered instant meal nutrition analysis"
+    />
     <meta name="twitter:image" content="/icon-512.png" />
-    
+
     <!-- Prevent text size adjustment on mobile -->
     <style>
       html {
@@ -60,17 +81,18 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
-    
+
     <!-- PWA Service Worker Registration -->
     <script>
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js')
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker
+            .register("/sw.js")
             .then((registration) => {
-              console.log('SW registered: ', registration);
+              console.log("SW registered: ", registration);
             })
             .catch((error) => {
-              console.log('SW registration failed: ', error);
+              console.log("SW registration failed: ", error);
             });
         });
       }

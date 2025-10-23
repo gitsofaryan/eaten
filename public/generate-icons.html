@@ -1,107 +1,107 @@
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
     <title>Generate Icons</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 40px;
-            background: #1a1a1a;
-            color: white;
-        }
-        canvas {
-            border: 2px solid #22c55e;
-            margin: 20px;
-        }
-        button {
-            background: #22c55e;
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            font-size: 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            margin: 10px;
-        }
-        button:hover {
-            background: #16a34a;
-        }
+      body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 40px;
+        background: #1a1a1a;
+        color: white;
+      }
+      canvas {
+        border: 2px solid #22c55e;
+        margin: 20px;
+      }
+      button {
+        background: #22c55e;
+        color: white;
+        border: none;
+        padding: 15px 30px;
+        font-size: 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        margin: 10px;
+      }
+      button:hover {
+        background: #16a34a;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <h1>🍽️ Eaten Icon Generator</h1>
     <p>Click the buttons below to download the icons for your PWA</p>
-    
+
     <canvas id="canvas192" width="192" height="192"></canvas>
     <button onclick="downloadIcon(192)">Download 192x192 Icon</button>
-    
+
     <canvas id="canvas512" width="512" height="512"></canvas>
     <button onclick="downloadIcon(512)">Download 512x512 Icon</button>
 
     <script>
-        function drawIcon(size) {
-            const canvas = document.getElementById('canvas' + size);
-            const ctx = canvas.getContext('2d');
-            
-            // Background gradient
-            const gradient = ctx.createLinearGradient(0, 0, size, size);
-            gradient.addColorStop(0, '#22c55e');
-            gradient.addColorStop(1, '#16a34a');
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, size, size);
-            
-            // Draw plate circle
-            ctx.fillStyle = 'white';
-            ctx.beginPath();
-            ctx.arc(size/2, size/2, size*0.35, 0, Math.PI * 2);
-            ctx.fill();
-            
-            // Draw fork
-            ctx.strokeStyle = '#22c55e';
-            ctx.lineWidth = size * 0.04;
-            ctx.lineCap = 'round';
-            
-            // Fork handle
-            ctx.beginPath();
-            ctx.moveTo(size*0.35, size*0.65);
-            ctx.lineTo(size*0.35, size*0.35);
-            ctx.stroke();
-            
-            // Fork prongs
-            for (let i = -1; i <= 1; i++) {
-                ctx.beginPath();
-                ctx.moveTo(size*0.35 + i*size*0.05, size*0.35);
-                ctx.lineTo(size*0.35 + i*size*0.05, size*0.25);
-                ctx.stroke();
-            }
-            
-            // Draw spoon
-            ctx.beginPath();
-            ctx.moveTo(size*0.65, size*0.65);
-            ctx.lineTo(size*0.65, size*0.35);
-            ctx.stroke();
-            
-            // Spoon bowl
-            ctx.beginPath();
-            ctx.arc(size*0.65, size*0.28, size*0.06, 0, Math.PI * 2);
-            ctx.fillStyle = '#22c55e';
-            ctx.fill();
+      function drawIcon(size) {
+        const canvas = document.getElementById("canvas" + size);
+        const ctx = canvas.getContext("2d");
+
+        // Background gradient
+        const gradient = ctx.createLinearGradient(0, 0, size, size);
+        gradient.addColorStop(0, "#22c55e");
+        gradient.addColorStop(1, "#16a34a");
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, size, size);
+
+        // Draw plate circle
+        ctx.fillStyle = "white";
+        ctx.beginPath();
+        ctx.arc(size / 2, size / 2, size * 0.35, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Draw fork
+        ctx.strokeStyle = "#22c55e";
+        ctx.lineWidth = size * 0.04;
+        ctx.lineCap = "round";
+
+        // Fork handle
+        ctx.beginPath();
+        ctx.moveTo(size * 0.35, size * 0.65);
+        ctx.lineTo(size * 0.35, size * 0.35);
+        ctx.stroke();
+
+        // Fork prongs
+        for (let i = -1; i <= 1; i++) {
+          ctx.beginPath();
+          ctx.moveTo(size * 0.35 + i * size * 0.05, size * 0.35);
+          ctx.lineTo(size * 0.35 + i * size * 0.05, size * 0.25);
+          ctx.stroke();
         }
 
-        function downloadIcon(size) {
-            const canvas = document.getElementById('canvas' + size);
-            const link = document.createElement('a');
-            link.download = 'icon-' + size + '.png';
-            link.href = canvas.toDataURL();
-            link.click();
-        }
+        // Draw spoon
+        ctx.beginPath();
+        ctx.moveTo(size * 0.65, size * 0.65);
+        ctx.lineTo(size * 0.65, size * 0.35);
+        ctx.stroke();
 
-        // Draw icons on load
-        drawIcon(192);
-        drawIcon(512);
+        // Spoon bowl
+        ctx.beginPath();
+        ctx.arc(size * 0.65, size * 0.28, size * 0.06, 0, Math.PI * 2);
+        ctx.fillStyle = "#22c55e";
+        ctx.fill();
+      }
+
+      function downloadIcon(size) {
+        const canvas = document.getElementById("canvas" + size);
+        const link = document.createElement("a");
+        link.download = "icon-" + size + ".png";
+        link.href = canvas.toDataURL();
+        link.click();
+      }
+
+      // Draw icons on load
+      drawIcon(192);
+      drawIcon(512);
     </script>
-</body>
+  </body>
 </html>
