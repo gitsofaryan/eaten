@@ -1,51 +1,97 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Camera, Upload, Loader2, X } from "lucide-react";
 import { FoodItemCard } from "@/components/FoodItemCard";
 import { TotalMacros } from "@/components/TotalMacros";
 import { useToast } from "@/hooks/use-toast";
 import heroImage from "@/assets/hero-food.jpg";
-
-interface FoodItem {
-  name: string;
-  quantity: string;
-  calories: number;
-  protein: number;
-  carbs: number;
-  fat: number;
-}
-
-interface AnalysisResult {
-  items: FoodItem[];
-}
+import { geminiService, FoodItem } from "@/services/geminiService";
 
 const Index = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [results, setResults] = useState<FoodItem[] | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      if (file.size > 10 * 1024 * 1024) {
+  const processFile = useCallback((file: File) => {
+    if (file.size > 10 * 1024 * 1024) {
       toast({
         title: "File too large",
         description: "Please choose a photo under 10MB",
         variant: "destructive",
       });
-        return;
-      }
+      return;
+    }
 
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setSelectedImage(e.target?.result as string);
-        setResults(null);
-      };
-      reader.readAsDataURL(file);
+    if (!file.type.startsWith('image/')) {
+      toast({
+        title: "Invalid file type",
+        description: "Please upload an image file",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setSelectedImage(e.target?.result as string);
+      setResults(null);
+    };
+    reader.readAsDataURL(file);
+  }, [toast]);
+
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      processFile(file);
     }
   };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+
+    const file = e.dataTransfer.files?.[0];
+    if (file) {
+      processFile(file);
+    }
+  };
+
+  const handlePaste = useCallback((e: ClipboardEvent) => {
+    const items = e.clipboardData?.items;
+    if (!items) return;
+
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].type.startsWith('image/')) {
+        const file = items[i].getAsFile();
+        if (file) {
+          processFile(file);
+          break;
+        }
+      }
+    }
+  }, [processFile]);
+
+  // Add paste event listener with useEffect
+  useEffect(() => {
+    document.addEventListener('paste', handlePaste as EventListener);
+    return () => document.removeEventListener('paste', handlePaste as EventListener);
+  }, [handlePaste]);
 
   const handleAnalyze = async () => {
     if (!selectedImage) return;
@@ -53,78 +99,22 @@ const Index = () => {
     setIsAnalyzing(true);
 
     try {
-      // TODO: Replace with actual API endpoint
-      const apiEndpoint = "https://aryanjain.app.n8n.cloud/webhook-test/eatn";
-      
-      // Simulate API call for now
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Mock response - replace with actual API call
-      const mockResponse: AnalysisResult = {
-        items: [
-          {
-            name: "Grilled Chicken Breast",
-            quantity: "150g",
-            calories: 165,
-            protein: 31,
-            carbs: 0,
-            fat: 3.6,
-          },
-          {
-            name: "Brown Rice",
-            quantity: "1 cup",
-            calories: 218,
-            protein: 5,
-            carbs: 46,
-            fat: 2,
-          },
-          {
-            name: "Mixed Vegetables",
-            quantity: "200g",
-            calories: 80,
-            protein: 3,
-            carbs: 16,
-            fat: 0.5,
-          },
-        ],
-      };
+      // Use Gemini API directly to analyze the food image
+      const result = await geminiService.analyzeFoodImage(selectedImage);
 
-      setResults(mockResponse.items);
+      setResults(result.items);
       toast({
         title: "Analysis complete",
-        description: `Found ${mockResponse.items.length} items`,
+        description: `Found ${result.items.length} food item${result.items.length !== 1 ? 's' : ''}`,
       });
-
-      // Uncomment when API is ready:
-      
-      const response = await fetch(apiEndpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          image: selectedImage,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Analysis failed');
-      }
-
-      const data: AnalysisResult = await response.json();
-      setResults(data.items);
-      
-      toast({
-        title: "Analysis complete",
-        description: `Found ${data.items.length} items`,
-      });
-      
 
     } catch (error) {
       console.error("Analysis error:", error);
+      const errorMessage = error instanceof Error ? error.message : "Could not analyze photo. Please try again.";
+
       toast({
         title: "Analysis failed",
-        description: "Could not analyze photo. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -142,15 +132,15 @@ const Index = () => {
 
   const totals = results
     ? {
-        calories: results.reduce((sum, item) => sum + item.calories, 0),
-        protein: results.reduce((sum, item) => sum + item.protein, 0),
-        carbs: results.reduce((sum, item) => sum + item.carbs, 0),
-        fat: results.reduce((sum, item) => sum + item.fat, 0),
-      }
+      calories: results.reduce((sum, item) => sum + item.calories, 0),
+      protein: results.reduce((sum, item) => sum + item.protein, 0),
+      carbs: results.reduce((sum, item) => sum + item.carbs, 0),
+      fat: results.reduce((sum, item) => sum + item.fat, 0),
+    }
     : null;
 
   return (
-    <div 
+    <div
       className="min-h-screen relative"
       style={{
         backgroundImage: `url(${heroImage})`,
@@ -160,7 +150,7 @@ const Index = () => {
       }}
     >
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
-      
+
       {/* Hero Section */}
       <div className="relative container font-calligraphy mx-auto px-4 py-12 md:py-16">
         <div className="max-w-2xl mx-auto text-center animate-fade-in-up mb-8">
@@ -178,10 +168,16 @@ const Index = () => {
         <div className="max-w-4xl mx-auto">
           {/* Upload Section */}
           {!selectedImage && (
-            <div className="glass-card rounded-3xl shadow-large p-8 md:p-12 text-center animate-scale-in">
+            <div
+              className={`glass-card rounded-3xl shadow-large p-8 md:p-12 text-center animate-scale-in transition-all duration-200 ${isDragging ? 'ring-4 ring-primary scale-105' : ''
+                }`}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+            >
               <div className="max-w-md mx-auto space-y-6">
                 <h2 className="text-2xl font-bold text-white">
-                  Upload your meal
+                  {isDragging ? 'Drop your image here!' : 'Upload your meal'}
                 </h2>
 
                 <input
@@ -194,27 +190,35 @@ const Index = () => {
                   id="photo-input"
                 />
 
-                <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-                  <Button
-                    variant="hero"
-                    size="xl"
-                    onClick={() => fileInputRef.current?.click()}
-                    className="gap-3"
-                  >
-                    <Camera className="w-6 h-6" />
-                    Take Photo
-                  </Button>
-                  
-                  <Button
-                    variant="upload"
-                    size="xl"
-                    onClick={() => fileInputRef.current?.click()}
-                    className="gap-3"
-                  >
-                    <Upload className="w-6 h-6" />
-                    Upload Photo
-                  </Button>
-                </div>
+                {!isDragging && (
+                  <>
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
+                      <Button
+                        variant="hero"
+                        size="xl"
+                        onClick={() => fileInputRef.current?.click()}
+                        className="gap-3"
+                      >
+                        <Camera className="w-6 h-6" />
+                        Take Photo
+                      </Button>
+
+                      <Button
+                        variant="upload"
+                        size="xl"
+                        onClick={() => fileInputRef.current?.click()}
+                        className="gap-3"
+                      >
+                        <Upload className="w-6 h-6" />
+                        Upload Photo
+                      </Button>
+                    </div>
+
+                    <p className="text-sm text-white/60 mt-4">
+                      Or drag & drop an image, or paste from clipboard (Ctrl+V)
+                    </p>
+                  </>
+                )}
               </div>
             </div>
           )}
@@ -238,12 +242,12 @@ const Index = () => {
                     <X className="w-5 h-5" />
                   </Button>
                 </div>
-                
+
                 <div className="p-8 text-center">
                   <h3 className="text-xl font-bold mb-6 text-white">
                     Ready to analyze
                   </h3>
-                  
+
                   <Button
                     variant="hero"
                     size="xl"

@@ -50,6 +50,7 @@ This project is built with modern web technologies:
 
 - Node.js 16+ and npm (or bun/pnpm)
 - Git
+- Google Gemini API key (get one at https://makersuite.google.com/app/apikey)
 
 ### Installation
 
@@ -64,12 +65,24 @@ This project is built with modern web technologies:
    npm install
    ```
 
-3. **Start the development server**
+3. **Configure API Key**
+   
+   Create a `.env` file in the root directory:
+   ```bash
+   cp .env.example .env
+   ```
+   
+   Then add your Gemini API key to `.env`:
+   ```
+   VITE_GEMINI_API_KEY=your_gemini_api_key_here
+   ```
+
+4. **Start the development server**
    ```bash
    npm run dev
    ```
 
-4. **Open your browser**
+5. **Open your browser**
    
    Navigate to `http://localhost:5173` (or the port shown in your terminal)
 
@@ -94,11 +107,12 @@ This project is built with modern web technologies:
 
 ### Current Status
 
-The app currently uses mock data for demonstration. To integrate with a real AI nutrition API:
+The app now uses Google Gemini AI for real-time food recognition and nutritional analysis! The integration:
 
-1. Update the `apiEndpoint` variable in `src/pages/Index.tsx`
-2. Uncomment the API integration code (lines 99-121)
-3. Configure your API credentials
+1. Analyzes uploaded food images using Gemini's vision capabilities
+2. Identifies individual food items and estimates portion sizes
+3. Provides accurate nutritional information (calories, protein, carbs, fat)
+4. Works directly without any middleware or webhook services
 
 ---
 
@@ -177,7 +191,7 @@ Colors can be customized in `src/index.css` by modifying CSS variables:
 
 ## 🔮 Future Enhancements
 
-- [ ] Integrate with real AI nutrition API
+- [x] Integrate with real AI nutrition API (Gemini API)
 - [ ] Add user authentication and meal history
 - [ ] Implement meal tracking over time
 - [ ] Add daily/weekly nutrition goals
