@@ -8,11 +8,11 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 120 20% 98%;
-    --foreground: 160 30% 15%;
+    --background: 160 15% 8%;
+    --foreground: 0 0% 98%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 160 30% 15%;
+    --card: 160 20% 15% / 0.6;
+    --card-foreground: 0 0% 98%;
 
     --popover: 0 0% 100%;
     --popover-foreground: 160 30% 15%;
@@ -96,6 +96,20 @@ All colors MUST be HSL.
   body {
     @apply bg-background text-foreground;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  
+  .glass-card {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+  }
+  
+  .glass-card-strong {
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
   }
   
   @keyframes fade-in-up {

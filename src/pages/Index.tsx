@@ -30,11 +30,11 @@ const Index = () => {
     const file = event.target.files?.[0];
     if (file) {
       if (file.size > 10 * 1024 * 1024) {
-        toast({
-          title: "File too big! 📏",
-          description: "Please choose a photo under 10MB",
-          variant: "destructive",
-        });
+      toast({
+        title: "File too large",
+        description: "Please choose a photo under 10MB",
+        variant: "destructive",
+      });
         return;
       }
 
@@ -91,8 +91,8 @@ const Index = () => {
 
       setResults(mockResponse.items);
       toast({
-        title: "Analysis complete! 🎉",
-        description: `Found ${mockResponse.items.length} food items in your meal`,
+        title: "Analysis complete",
+        description: `Found ${mockResponse.items.length} items`,
       });
 
       // Uncomment when API is ready:
@@ -115,16 +115,16 @@ const Index = () => {
       setResults(data.items);
       
       toast({
-        title: "Analysis complete! 🎉",
-        description: `Found ${data.items.length} food items in your meal`,
+        title: "Analysis complete",
+        description: `Found ${data.items.length} items`,
       });
       */
 
     } catch (error) {
       console.error("Analysis error:", error);
       toast({
-        title: "Oops! Something went wrong 😕",
-        description: "We couldn't analyze your photo. Please try again!",
+        title: "Analysis failed",
+        description: "Could not analyze photo. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -150,46 +150,39 @@ const Index = () => {
     : null;
 
   return (
-    <div className="min-h-screen bg-gradient-hero">
+    <div 
+      className="min-h-screen relative"
+      style={{
+        backgroundImage: `url(${heroImage})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed',
+      }}
+    >
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+      
       {/* Hero Section */}
-      <div className="relative overflow-hidden">
-        <div 
-          className="absolute inset-0 opacity-20"
-          style={{
-            backgroundImage: `url(${heroImage})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-          }}
-        />
-        <div className="relative container mx-auto px-4 py-12 md:py-20">
-          <div className="max-w-2xl mx-auto text-center animate-fade-in-up">
-            <h1 className="text-4xl md:text-6xl font-extrabold mb-4 text-foreground">
-              NU 🍽️
-            </h1>
-            <p className="text-lg md:text-xl text-muted-foreground mb-2">
-              Snap a photo, know your nutrition instantly!
-            </p>
-            <p className="text-sm md:text-base text-muted-foreground">
-              Simple, fast, and accurate calorie tracking powered by AI
-            </p>
-          </div>
+      <div className="relative container mx-auto px-4 py-12 md:py-16">
+        <div className="max-w-2xl mx-auto text-center animate-fade-in-up mb-8">
+          <h1 className="text-5xl md:text-7xl font-extrabold mb-3 text-white">
+            NU
+          </h1>
+          <p className="text-base md:text-lg text-white/80">
+            Snap. Analyze. Know your nutrition.
+          </p>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 pb-12">
+      <div className="relative container mx-auto px-4 pb-12">
         <div className="max-w-4xl mx-auto">
           {/* Upload Section */}
           {!selectedImage && (
-            <div className="bg-card rounded-3xl shadow-large p-8 md:p-12 text-center animate-scale-in">
+            <div className="glass-card rounded-3xl shadow-large p-8 md:p-12 text-center animate-scale-in">
               <div className="max-w-md mx-auto space-y-6">
-                <div className="text-6xl mb-4">📸</div>
-                <h2 className="text-2xl font-bold text-foreground">
-                  Take or upload a photo of your meal
+                <h2 className="text-2xl font-bold text-white">
+                  Upload your meal
                 </h2>
-                <p className="text-muted-foreground">
-                  We'll tell you exactly what's in it!
-                </p>
 
                 <input
                   ref={fileInputRef}
@@ -229,12 +222,12 @@ const Index = () => {
           {/* Image Preview & Analysis */}
           {selectedImage && !results && (
             <div className="space-y-6 animate-scale-in">
-              <div className="bg-card rounded-3xl shadow-large overflow-hidden">
+              <div className="glass-card rounded-3xl shadow-large overflow-hidden">
                 <div className="relative">
                   <img
                     src={selectedImage}
                     alt="Selected meal"
-                    className="w-full h-auto max-h-96 object-cover"
+                    className="w-full h-auto max-h-96 object-cover rounded-t-3xl"
                   />
                   <Button
                     variant="destructive"
@@ -247,12 +240,9 @@ const Index = () => {
                 </div>
                 
                 <div className="p-8 text-center">
-                  <h3 className="text-2xl font-bold mb-4 text-foreground">
-                    Looking good! 😋
+                  <h3 className="text-xl font-bold mb-6 text-white">
+                    Ready to analyze
                   </h3>
-                  <p className="text-muted-foreground mb-6">
-                    Ready to analyze your meal?
-                  </p>
                   
                   <Button
                     variant="hero"
@@ -268,7 +258,7 @@ const Index = () => {
                       </>
                     ) : (
                       <>
-                        ✨ Analyze My Meal
+                        Analyze
                       </>
                     )}
                   </Button>
@@ -281,12 +271,12 @@ const Index = () => {
           {results && (
             <div className="space-y-6 animate-fade-in-up">
               {/* Image Thumbnail */}
-              <div className="bg-card rounded-3xl shadow-medium overflow-hidden">
+              <div className="glass-card rounded-3xl shadow-medium overflow-hidden">
                 <div className="relative">
                   <img
                     src={selectedImage!}
                     alt="Analyzed meal"
-                    className="w-full h-48 object-cover"
+                    className="w-full h-48 object-cover rounded-t-3xl"
                   />
                   <Button
                     variant="secondary"
@@ -295,7 +285,7 @@ const Index = () => {
                     className="absolute top-4 right-4 gap-2"
                   >
                     <Camera className="w-4 h-4" />
-                    New Photo
+                    New
                   </Button>
                 </div>
               </div>
@@ -312,8 +302,8 @@ const Index = () => {
 
               {/* Food Items */}
               <div>
-                <h3 className="text-xl font-bold mb-4 text-foreground px-2">
-                  What's in your meal:
+                <h3 className="text-xl font-bold mb-4 text-white px-2">
+                  Breakdown
                 </h3>
                 <div className="space-y-4">
                   {results.map((item, index) => (
