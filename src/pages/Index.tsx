@@ -165,7 +165,7 @@ const Index = () => {
       <div className="relative container mx-auto px-4 py-12 md:py-16">
         <div className="max-w-2xl mx-auto text-center animate-fade-in-up mb-8">
           <h1 className="text-5xl md:text-7xl font-extrabold mb-3 text-white">
-            NU
+            eaten
           </h1>
           <p className="text-base md:text-lg text-white/80">
             Snap. Analyze. Know your nutrition.
