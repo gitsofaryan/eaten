@@ -162,7 +162,7 @@ const Index = () => {
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
       
       {/* Hero Section */}
-      <div className="relative container mx-auto px-4 py-12 md:py-16">
+      <div className="relative container font-calligraphy mx-auto px-4 py-12 md:py-16">
         <div className="max-w-2xl mx-auto text-center animate-fade-in-up mb-8">
           <h1 className="text-6xl md:text-8xl font-calligraphy mb-3 text-white tracking-wide">
             eaten
