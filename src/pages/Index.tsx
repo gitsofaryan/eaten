@@ -43,7 +43,7 @@ const Index = () => {
   // Load data from localStorage on mount with version check
   useEffect(() => {
     const savedVersion = localStorage.getItem('eaten_version');
-    
+
     // Clear old data if version doesn't match
     if (savedVersion !== APP_VERSION) {
       console.log('New app version detected, clearing old cache');

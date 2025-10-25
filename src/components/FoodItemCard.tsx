@@ -17,22 +17,22 @@ export const FoodItemCard = ({ name, quantity, calories, protein, carbs, fat }: 
             <p className="text-sm text-white/60 mt-1">{quantity}</p>
           </div>
           <div className="bg-gradient-accent text-accent-foreground px-3 py-1 rounded-full text-sm font-bold">
-            {calories} cal
+            {calories.toFixed(2)} cal
           </div>
         </div>
-        
+
         <div className="grid grid-cols-3 gap-3 pt-3 border-t border-white/20">
           <div className="text-center">
             <p className="text-xs text-white/60 mb-1">Protein</p>
-            <p className="font-semibold text-white">{protein}g</p>
+            <p className="font-semibold text-white">{protein.toFixed(2)}g</p>
           </div>
           <div className="text-center">
             <p className="text-xs text-white/60 mb-1">Carbs</p>
-            <p className="font-semibold text-white">{carbs}g</p>
+            <p className="font-semibold text-white">{carbs.toFixed(2)}g</p>
           </div>
           <div className="text-center">
             <p className="text-xs text-white/60 mb-1">Fat</p>
-            <p className="font-semibold text-white">{fat}g</p>
+            <p className="font-semibold text-white">{fat.toFixed(2)}g</p>
           </div>
         </div>
       </div>
