@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
-import { Camera, Upload, Loader2, X, Instagram, Dumbbell } from "lucide-react";
+import { Camera, Upload, Loader2, X, Instagram, Dumbbell, Star } from "lucide-react";
 import { FoodItemCard } from "@/components/FoodItemCard";
 import { TotalMacros } from "@/components/TotalMacros";
 import { useToast } from "@/hooks/use-toast";
@@ -16,6 +16,9 @@ const Index = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
+
+  // App version for cache busting - increment this when you make major changes
+  const APP_VERSION = "1.1";
 
   // Check for webcam availability
   useEffect(() => {
@@ -37,8 +40,19 @@ const Index = () => {
     }
   }, []);
 
-  // Load data from localStorage on mount
+  // Load data from localStorage on mount with version check
   useEffect(() => {
+    const savedVersion = localStorage.getItem('eaten_version');
+    
+    // Clear old data if version doesn't match
+    if (savedVersion !== APP_VERSION) {
+      console.log('New app version detected, clearing old cache');
+      localStorage.removeItem('eaten_selectedImage');
+      localStorage.removeItem('eaten_results');
+      localStorage.setItem('eaten_version', APP_VERSION);
+      return;
+    }
+
     const savedImage = localStorage.getItem('eaten_selectedImage');
     const savedResults = localStorage.getItem('eaten_results');
 
@@ -53,7 +67,7 @@ const Index = () => {
         localStorage.removeItem('eaten_results');
       }
     }
-  }, []);
+  }, [APP_VERSION]);
 
   // Save to localStorage whenever state changes
   useEffect(() => {
@@ -216,7 +230,7 @@ const Index = () => {
       {/* Hero Section */}
       <div className="relative container font-calligraphy mx-auto px-4 py-12 md:py-16">
         <div className="max-w-2xl mx-auto text-center animate-fade-in-up mb-8">
-          <h1 className="text-6xl md:text-8xl font-calligraphy mb-3 text-white tracking-wide">
+          <h1 className="text-9xl md:text-9xl font-calligraphy mb-3 text-white tracking-wide">
             eaten
           </h1>
           <p className="text-base md:text-lg text-white/80">
@@ -411,9 +425,23 @@ const Index = () => {
           )}
         </div>
 
-        {/* Credit Label */}
-        <div className="fixed bottom-4 right-4 z-50">
-          <div className="glass-card rounded-2xl px-4 py-3 shadow-large hover:scale-105 transition-transform duration-200">
+        {/* Credit and GitHub Badges */}
+        <div className="fixed bottom-4 right-4 z-50 flex gap-3">
+          {/* GitHub Star Badge */}
+          <div className="glass-card rounded-2xl px-3 py-2 shadow-large hover:scale-105 transition-transform duration-200">
+            <a
+              href="https://github.com/gitsofaryan/eaten"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 text-white/90 hover:text-white transition-colors"
+            >
+              <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+              <span className="text-xs font-medium">Star on GitHub</span>
+            </a>
+          </div>
+
+          {/* Instagram Credit */}
+          <div className="glass-card rounded-2xl px-3 py-2 shadow-large hover:scale-105 transition-transform duration-200">
             <a
               href="https://instagram.com/arien_jain"
               target="_blank"
@@ -425,7 +453,7 @@ const Index = () => {
                 <span className="text-xs font-medium">Built by Arien</span>
                 <span className="text-[10px] text-white/60 flex items-center gap-1">
                   <Instagram className="w-3 h-3" />
-                  @arien_jain • For gym brats 💪
+                  @arien_jain
                 </span>
               </div>
             </a>
