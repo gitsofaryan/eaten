@@ -15,9 +15,9 @@ export interface AnalysisResult {
 
 class AIService {
   private client: OpenAI | null = null;
-  // Using faster model as primary for better response times
-  private primaryModel = "google/gemini-2.0-flash-exp:free";
-  private fallbackModel = "openrouter/andromeda-alpha";
+  // Using Google Gemini 2.5 Flash Preview 09-2025 - state-of-the-art for reasoning, vision, and scientific tasks
+  // Ranked #1 in Marketing/SEO, #3 in Legal, #7 in Technology
+  private model = "google/gemini-2.5-flash-preview-09-2025";
 
   constructor() {
     const apiKey = import.meta.env.VITE_OPENROUTER_API_KEY;
@@ -80,32 +80,81 @@ class AIService {
    */
   private parseAIResponse(text: string): FoodItem[] {
     try {
+      // Remove any markdown code blocks
+      const cleanText = text
+        .replace(/```json\n?/g, "")
+        .replace(/```\n?/g, "")
+        .trim();
+
       // Try to find JSON in the response
-      const jsonMatch = text.match(/\[[\s\S]*\]/);
+      const jsonMatch = cleanText.match(/\[[\s\S]*\]/);
       if (jsonMatch) {
         const items = JSON.parse(jsonMatch[0]) as Array<
           Record<string, unknown>
         >;
-        return items.map((item) => ({
-          name: String(item.name || item.food || "Unknown Item"),
-          quantity: String(item.quantity || item.serving || "1 serving"),
-          calories: parseFloat(String(item.calories)) || 0,
-          protein: parseFloat(String(item.protein)) || 0,
-          carbs: parseFloat(String(item.carbs || item.carbohydrates)) || 0,
-          fat: parseFloat(String(item.fat)) || 0,
-        }));
+
+        // Validate and clean each item
+        const validItems = items
+          .filter((item) => {
+            // Must have a name and at least some nutritional data
+            return (
+              item.name &&
+              (item.calories || item.protein || item.carbs || item.fat)
+            );
+          })
+          .map((item) => {
+            const calories = parseFloat(String(item.calories)) || 0;
+            const protein = parseFloat(String(item.protein)) || 0;
+            const carbs =
+              parseFloat(String(item.carbs || item.carbohydrates)) || 0;
+            const fat = parseFloat(String(item.fat)) || 0;
+
+            // Basic sanity check: calories should roughly match macros
+            // (protein × 4) + (carbs × 4) + (fat × 9)
+            const calculatedCalories = protein * 4 + carbs * 4 + fat * 9;
+            const caloriesDiff = Math.abs(calories - calculatedCalories);
+
+            // If difference is too large (>30%), log a warning
+            if (
+              caloriesDiff > calculatedCalories * 0.3 &&
+              calculatedCalories > 0
+            ) {
+              console.warn(
+                `Potential inaccuracy for ${
+                  item.name
+                }: stated ${calories}kcal vs calculated ${calculatedCalories.toFixed(
+                  0
+                )}kcal`
+              );
+            }
+
+            return {
+              name: String(item.name || item.food || "Unknown Item").trim(),
+              quantity: String(
+                item.quantity || item.serving || "1 serving"
+              ).trim(),
+              calories: Math.round(calories * 10) / 10, // Round to 1 decimal
+              protein: Math.round(protein * 10) / 10,
+              carbs: Math.round(carbs * 10) / 10,
+              fat: Math.round(fat * 10) / 10,
+            };
+          });
+
+        return validItems;
       }
 
       // If no JSON found, return empty array
+      console.error("No valid JSON array found in AI response:", text);
       return [];
     } catch (error) {
       console.error("Error parsing AI response:", error);
+      console.error("Response text:", text);
       throw new Error("Failed to parse nutrition data from image");
     }
   }
 
   /**
-   * Analyze food image using OpenRouter API with automatic retry and fallback
+   * Analyze food image using OpenRouter API with Google Gemini 2.5 Flash Preview
    */
   async analyzeFoodImage(base64Image: string): Promise<AnalysisResult> {
     if (!this.isConfigured()) {
@@ -121,40 +170,47 @@ class AIService {
       `Image size reduced: ${base64Image.length} -> ${compressedImage.length} bytes`
     );
 
-    const prompt = `Analyze this food image and provide nutritional information for each distinct food item visible.
+    const prompt = `You are a professional nutritionist analyzing food images. Analyze this food image carefully and provide accurate nutritional information for each distinct food item visible.
 
-Return ONLY a valid JSON array with this exact structure (no additional text or markdown):
+CRITICAL INSTRUCTIONS:
+1. Only identify food items that are CLEARLY VISIBLE in the image
+2. Do NOT make up or assume items that aren't shown
+3. Provide REALISTIC and ACCURATE portion size estimates based on what you see
+4. Use verified nutritional data from USDA or similar databases
+5. If an item is partially visible or unclear, either skip it or clearly estimate conservatively
+6. Consider typical serving sizes for the type of food shown
+
+Return ONLY a valid JSON array with this exact structure (no additional text, markdown, or code blocks):
 [
   {
-    "name": "Food item name",
-    "quantity": "Estimated portion size (e.g., '150g', '1 cup', '1 piece')",
-    "calories": number,
-    "protein": number (in grams),
-    "carbs": number (in grams),
-    "fat": number (in grams)
+    "name": "Specific food item name (e.g., 'Grilled Chicken Breast' not just 'Chicken')",
+    "quantity": "Precise portion estimate with unit (e.g., '150g', '1 cup', '2 pieces', '1 medium apple')",
+    "calories": number (kcal - be accurate, not rounded),
+    "protein": number (grams - decimal precision),
+    "carbs": number (grams - decimal precision),
+    "fat": number (grams - decimal precision)
   }
 ]
 
-Important guidelines:
-- Identify each distinct food item in the image
-- Provide realistic portion size estimates
-- Use standard nutritional databases for accurate macro values
-- If you can't identify an item clearly, make your best estimate
-- Return empty array [] if no food is visible
-- Ensure all numeric values are numbers, not strings`;
+ACCURACY GUIDELINES:
+- Cross-reference nutritional values to ensure they make sense together
+- Total calories should roughly equal: (protein × 4) + (carbs × 4) + (fat × 9)
+- Be specific about preparation method if visible (fried, grilled, baked, etc.)
+- Account for visible oils, sauces, or toppings in your calculations
+- If portion size is uncertain, estimate conservatively and state it clearly
+- Return empty array [] ONLY if absolutely no food is visible in the image
 
-    // Try primary model first, fallback to secondary if it fails
-    let lastError: Error | null = null;
+Examples of good responses:
+- "Grilled Chicken Breast" with "150g" NOT "Chicken" with "1 piece"
+- "Steamed White Rice" with "200g" NOT "Rice" with "some"
+- "Medium Banana" with "118g" NOT "Banana" with "1"`;
 
-    // Try primary model (Gemini 2.0 Flash - Faster!)
     try {
-      console.log(
-        `Attempting analysis with primary model (${this.primaryModel})...`
-      );
+      console.log(`Analyzing with ${this.model}...`);
 
       const completion = await this.client!.chat.completions.create(
         {
-          model: this.primaryModel,
+          model: this.model,
           messages: [
             {
               role: "user",
@@ -192,82 +248,30 @@ Important guidelines:
 
       return { items };
     } catch (error) {
-      console.warn("Primary model failed, trying fallback model...", error);
-      lastError = error instanceof Error ? error : new Error(String(error));
+      console.error("Analysis failed:", error);
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error";
 
-      // Try fallback model (Andromeda Alpha - More accurate but slower)
-      try {
-        console.log(
-          `Attempting analysis with fallback model (${this.fallbackModel})...`
+      if (errorMessage.includes("API key") || errorMessage.includes("401")) {
+        throw new Error(
+          "Invalid API key. Please check your OpenRouter API key configuration."
         );
-
-        const completion = await this.client!.chat.completions.create(
-          {
-            model: this.fallbackModel,
-            messages: [
-              {
-                role: "user",
-                content: [
-                  {
-                    type: "text",
-                    text: prompt,
-                  },
-                  {
-                    type: "image_url",
-                    image_url: {
-                      url: compressedImage,
-                    },
-                  },
-                ],
-              },
-            ],
-          },
-          {
-            headers: {
-              "HTTP-Referer": "https://eaten.app",
-              "X-Title": "Eaten - Food Nutrition Analyzer",
-            },
-          }
-        );
-
-        const text = completion.choices[0]?.message?.content || "";
-        const items = this.parseAIResponse(text);
-
-        if (items.length === 0) {
-          throw new Error(
-            "No food items detected in the image. Please try a clearer photo."
-          );
-        }
-
-        return { items };
-      } catch (fallbackError) {
-        console.error("Fallback model also failed:", fallbackError);
-        lastError = fallbackError instanceof Error ? fallbackError : lastError;
       }
-    }
 
-    // If we get here, both models failed
-    const errorMessage = lastError?.message || "Unknown error";
+      if (errorMessage.includes("quota") || errorMessage.includes("429")) {
+        throw new Error("API quota exceeded. Please try again later.");
+      }
 
-    if (errorMessage.includes("API key") || errorMessage.includes("401")) {
+      if (errorMessage.includes("overloaded") || errorMessage.includes("503")) {
+        throw new Error(
+          "AI model is currently overloaded. Please try again in a few moments."
+        );
+      }
+
       throw new Error(
-        "Invalid API key. Please check your OpenRouter API key configuration."
+        errorMessage || "Failed to analyze image. Please try again."
       );
     }
-
-    if (errorMessage.includes("quota") || errorMessage.includes("429")) {
-      throw new Error("API quota exceeded. Please try again later.");
-    }
-
-    if (errorMessage.includes("overloaded") || errorMessage.includes("503")) {
-      throw new Error(
-        "AI models are currently overloaded. Please try again in a few moments."
-      );
-    }
-
-    throw new Error(
-      errorMessage || "Failed to analyze image. Please try again."
-    );
   }
 }
 

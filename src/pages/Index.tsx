@@ -12,8 +12,65 @@ const Index = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [results, setResults] = useState<FoodItem[] | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [hasWebcam, setHasWebcam] = useState<boolean | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
+
+  // Check for webcam availability
+  useEffect(() => {
+    const checkWebcam = async () => {
+      try {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const videoDevices = devices.filter(device => device.kind === 'videoinput');
+        setHasWebcam(videoDevices.length > 0);
+      } catch (error) {
+        console.error('Error checking for webcam:', error);
+        setHasWebcam(false);
+      }
+    };
+
+    if (navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
+      checkWebcam();
+    } else {
+      setHasWebcam(false);
+    }
+  }, []);
+
+  // Load data from localStorage on mount
+  useEffect(() => {
+    const savedImage = localStorage.getItem('eaten_selectedImage');
+    const savedResults = localStorage.getItem('eaten_results');
+
+    if (savedImage) {
+      setSelectedImage(savedImage);
+    }
+    if (savedResults) {
+      try {
+        setResults(JSON.parse(savedResults));
+      } catch (error) {
+        console.error('Error parsing saved results:', error);
+        localStorage.removeItem('eaten_results');
+      }
+    }
+  }, []);
+
+  // Save to localStorage whenever state changes
+  useEffect(() => {
+    if (selectedImage) {
+      localStorage.setItem('eaten_selectedImage', selectedImage);
+    } else {
+      localStorage.removeItem('eaten_selectedImage');
+    }
+  }, [selectedImage]);
+
+  useEffect(() => {
+    if (results) {
+      localStorage.setItem('eaten_results', JSON.stringify(results));
+    } else {
+      localStorage.removeItem('eaten_results');
+    }
+  }, [results]);
 
   const processFile = useCallback((file: File) => {
     if (file.size > 10 * 1024 * 1024) {
@@ -125,8 +182,13 @@ const Index = () => {
   const handleReset = () => {
     setSelectedImage(null);
     setResults(null);
+    localStorage.removeItem('eaten_selectedImage');
+    localStorage.removeItem('eaten_results');
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
+    }
+    if (cameraInputRef.current) {
+      cameraInputRef.current.value = "";
     }
   };
 
@@ -180,14 +242,25 @@ const Index = () => {
                   {isDragging ? 'Drop your image here!' : 'Upload your meal'}
                 </h2>
 
+                {/* Camera input - opens camera */}
                 <input
-                  ref={fileInputRef}
+                  ref={cameraInputRef}
                   type="file"
                   accept="image/*"
                   capture="environment"
                   onChange={handleFileSelect}
                   className="hidden"
-                  id="photo-input"
+                  id="camera-input"
+                />
+
+                {/* Gallery input - opens file picker/gallery */}
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileSelect}
+                  className="hidden"
+                  id="gallery-input"
                 />
 
                 {!isDragging && (
@@ -196,11 +269,22 @@ const Index = () => {
                       <Button
                         variant="hero"
                         size="xl"
-                        onClick={() => fileInputRef.current?.click()}
+                        onClick={() => {
+                          if (hasWebcam === false) {
+                            toast({
+                              title: "No webcam detected",
+                              description: "Please use the upload option to select a photo from your device",
+                              variant: "destructive",
+                            });
+                          } else {
+                            cameraInputRef.current?.click();
+                          }
+                        }}
                         className="gap-3"
+                        disabled={hasWebcam === false}
                       >
                         <Camera className="w-6 h-6" />
-                        Take Photo
+                        {hasWebcam === false ? 'No Webcam Present' : 'Take Photo'}
                       </Button>
 
                       <Button
