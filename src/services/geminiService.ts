@@ -133,10 +133,10 @@ class AIService {
               quantity: String(
                 item.quantity || item.serving || "1 serving"
               ).trim(),
-              calories: Math.round(calories * 10) / 10, // Round to 1 decimal
-              protein: Math.round(protein * 10) / 10,
-              carbs: Math.round(carbs * 10) / 10,
-              fat: Math.round(fat * 10) / 10,
+              calories: Math.round(calories * 100) / 100, // Round to 2 decimals
+              protein: Math.round(protein * 100) / 100,
+              carbs: Math.round(carbs * 100) / 100,
+              fat: Math.round(fat * 100) / 100,
             };
           });
 

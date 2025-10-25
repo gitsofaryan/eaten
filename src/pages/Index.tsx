@@ -279,7 +279,7 @@ const Index = () => {
 
                 {!isDragging && (
                   <>
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
+                    <div className="flex flex-col gap-3 justify-center pt-4">
                       <Button
                         variant="hero"
                         size="xl"
@@ -294,26 +294,26 @@ const Index = () => {
                             cameraInputRef.current?.click();
                           }
                         }}
-                        className="gap-3"
+                        className="gap-3 w-full"
                         disabled={hasWebcam === false}
                       >
-                        <Camera className="w-6 h-6" />
-                        {hasWebcam === false ? 'No Webcam Present' : 'Take Photo'}
+                        <Camera className="w-5 h-5" />
+                        {hasWebcam === false ? 'No Webcam' : 'Take Photo'}
                       </Button>
 
                       <Button
                         variant="upload"
                         size="xl"
                         onClick={() => fileInputRef.current?.click()}
-                        className="gap-3"
+                        className="gap-3 w-full"
                       >
-                        <Upload className="w-6 h-6" />
+                        <Upload className="w-5 h-5" />
                         Upload Photo
                       </Button>
                     </div>
 
-                    <p className="text-sm text-white/60 mt-4">
-                      Or drag & drop an image, or paste from clipboard (Ctrl+V)
+                    <p className="text-xs sm:text-sm text-white/60 mt-4 px-2">
+                      Or drag & drop, or paste (Ctrl+V)
                     </p>
                   </>
                 )}
@@ -341,8 +341,8 @@ const Index = () => {
                   </Button>
                 </div>
 
-                <div className="p-8 text-center">
-                  <h3 className="text-xl font-bold mb-6 text-white">
+                <div className="p-4 sm:p-8 text-center">
+                  <h3 className="text-lg sm:text-xl font-bold mb-4 sm:mb-6 text-white">
                     Ready to analyze
                   </h3>
 
@@ -351,11 +351,11 @@ const Index = () => {
                     size="xl"
                     onClick={handleAnalyze}
                     disabled={isAnalyzing}
-                    className="gap-3"
+                    className="gap-3 w-full sm:w-auto"
                   >
                     {isAnalyzing ? (
                       <>
-                        <Loader2 className="w-6 h-6 animate-spin" />
+                        <Loader2 className="w-5 h-5 animate-spin" />
                         Analyzing...
                       </>
                     ) : (
@@ -425,40 +425,42 @@ const Index = () => {
           )}
         </div>
 
-        {/* Credit and GitHub Badges */}
-        <div className="fixed bottom-4 right-4 z-50 flex gap-3">
-          {/* GitHub Star Badge */}
-          <div className="glass-card rounded-2xl px-3 py-2 shadow-large hover:scale-105 transition-transform duration-200">
-            <a
-              href="https://github.com/gitsofaryan/eaten"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 text-white/90 hover:text-white transition-colors"
-            >
-              <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-              <span className="text-xs font-medium">Star on GitHub</span>
-            </a>
-          </div>
+        {/* Credit and GitHub Badges - Hidden when results are shown */}
+        {!results && (
+          <div className="fixed bottom-2 sm:bottom-4 right-2 sm:right-4 z-50 flex flex-row gap-2 sm:gap-3">
+            {/* GitHub Star Badge */}
+            <div className="glass-card rounded-xl sm:rounded-2xl px-2 sm:px-3 py-2 shadow-large hover:scale-105 transition-transform duration-200">
+              <a
+                href="https://github.com/gitsofaryan/eaten"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 sm:gap-2 text-white/90 hover:text-white transition-colors justify-center"
+              >
+                <Star className="w-4 h-4 text-yellow-400 fill-yellow-400 flex-shrink-0" />
+                <span className="hidden sm:inline text-xs font-medium whitespace-nowrap">Star on GitHub</span>
+              </a>
+            </div>
 
-          {/* Instagram Credit */}
-          <div className="glass-card rounded-2xl px-3 py-2 shadow-large hover:scale-105 transition-transform duration-200">
-            <a
-              href="https://instagram.com/arien_jain"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 text-white/90 hover:text-white transition-colors"
-            >
-              <Dumbbell className="w-4 h-4 text-primary" />
-              <div className="flex flex-col">
-                <span className="text-xs font-medium">Built by Arien</span>
-                <span className="text-[10px] text-white/60 flex items-center gap-1">
-                  <Instagram className="w-3 h-3" />
-                  @arien_jain
-                </span>
-              </div>
-            </a>
+            {/* Instagram Credit */}
+            <div className="glass-card rounded-xl sm:rounded-2xl px-2 sm:px-3 py-2 shadow-large hover:scale-105 transition-transform duration-200">
+              <a
+                href="https://instagram.com/arien_jain"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 sm:gap-2 text-white/90 hover:text-white transition-colors justify-center"
+              >
+                <Dumbbell className="w-4 h-4 text-primary flex-shrink-0" />
+                <div className="hidden sm:flex flex-col">
+                  <span className="text-xs font-medium">Built by Arien</span>
+                  <span className="text-[10px] text-white/60 flex items-center gap-1">
+                    <Instagram className="w-3 h-3" />
+                    @arien_jain
+                  </span>
+                </div>
+              </a>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
